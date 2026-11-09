@@ -8,7 +8,7 @@ export const CUTS = {
   1: {
     dur: 4.0, key: 'major',
     title: { text: "pov : 싸고 넓은 빌라 구했는데\n서류에 '근린생활시설'이라고\n적혀 있을 때", t0: 0, t1: 4.0 },
-    bubbles: [{ who: 'sq', kind: 'say', text: '이 넓이에 이 가격?\n완전 땡잡았다!', t0: 1.5, t1: 4.0 }],
+    bubbles: [{ who: 'sq', kind: 'say', text: '이 넓이에 이 가격?\n완전 땡잡았다!', t0: 1.85, t1: 4.0 }],
     subs: [],
   },
   2: {

@@ -45,7 +45,7 @@ export function makeSquirrel() {
   // 땀방울 (당황할 때)
   const sweat = sc(ico(.09, 0, '#bfe3f5', .8, .35, .3), .8, 1.3, .8); sweat.castShadow = false; head.add(sweat); sweat.visible = false;
 
-  const P0 = { armL: [0, -.15], armR: [0, -.15], squash: 1, jump: 0, ear: 0, eye: 1, mouth: 1, headTilt: 0, headTurn: 0, headNod: 0, tailSway: 0, lean: 0, sweat: 0 };
+  const P0 = { armL: [0, -.15], armR: [0, -.15], squash: 1, jump: 0, ear: 0, eye: 1, mouth: 1, headTilt: 0, headTurn: 0, headNod: 0, tailSway: 0, lean: 0, sweat: 0, tailPuff: 1 };
   function pose(p) {
     p = { ...P0, ...p };
     // 팔 [앞으로(x), 옆으로(z)] 라디안
@@ -57,7 +57,7 @@ export function makeSquirrel() {
     eyes.forEach(e => e.scale.set(p.eye, p.eye, 1));
     mouth.scale.set(.9 * lerp(1, .8, p.mouth - 1), 1.1 * p.mouth, .5);
     head.rotation.set(p.headNod, p.headTurn, p.headTilt);
-    tail.rotation.x = p.tailSway;
+    tail.rotation.x = p.tailSway; tail.scale.setScalar(p.tailPuff);
     sweat.visible = p.sweat > .01; sweat.position.y = .35 - p.sweat * .25;
   }
   pose({});
@@ -91,7 +91,8 @@ export function makeOwl() {
   function pose(p = {}) {
     head.rotation.set(p.nod || 0, p.turn || 0, p.tilt || 0);
     brow.forEach((b, i) => { const s = i ? 1 : -1; b.rotation.z = s * (p.sad || 0) * .35; });
-    wings.forEach((w, i) => { w.rotation.z = (i ? -1 : 1) * (p.wing || 0); });
+    wings.forEach((w, i) => { const s = i ? -1 : 1; w.rotation.z = s * (p.wing || 0); w.position.set(s * lerp(.62, .25, p.cross || 0), lerp(.8, 1.05, p.cross || 0), lerp(0, .5, p.cross || 0)); });
+    body.rotation.z = p.sway || 0; body.position.y = p.hop || 0;
   }
   const anchors = { headTop: new THREE.Object3D() }; anchors.headTop.position.set(0, .75, 0); head.add(anchors.headTop);
   return { root, pose, head, anchors };

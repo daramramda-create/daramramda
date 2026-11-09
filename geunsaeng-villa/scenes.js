@@ -44,7 +44,7 @@ function cut1(scene) {
   const props = [[rug, .75], [sofa, 1.0], [win, 1.25], [lamp, 2.25], [plant, 2.5], [sign, 3.0]];
   props.forEach(([o, t], i) => EV.push({ t, type: 'pop', n: 3 + i, big: o === win || o === sofa }));
   const sq = makeSquirrel(); sq.root.position.set(0, 0, .45); W.add(sq.root);
-  EV.push({ t: 1.0, type: 'crouch' }, { t: 1.25, type: 'jump' }, { t: 1.85, type: 'land' }, { t: 1.5, type: 'bubble' });
+  EV.push({ t: 1.0, type: 'crouch' }, { t: 1.25, type: 'jump' }, { t: 1.85, type: 'land' }, { t: 1.85, type: 'bubble' });
   const cA = K([[0, 34], [3.0, 44], [4, 45]]), cF = K([[0, 5.6], [.25, 5.7], [2.6, 9.4], [4, 9.8]]), cY = K([[0, 1.45], [2.6, 1.0], [4, 1.0]]);
   return {
     W, EV, dur: 4, sky: { zen: '#c9b8f0', hor: '#ffdccb' }, sun: { az: 60, el: 52 },
@@ -54,18 +54,20 @@ function cut1(scene) {
       props.forEach(([o, t0]) => popIn(o, t, t0));
       puffs[0].userData.set(t - 1.85);
       // 다람쥐: 들썩이는 대기 → 웅크림 → 점프(두 팔 활짝) → 착지
-      const bob = Math.abs(Math.sin(t * Math.PI * 2)) * .06 * (1 - seg(t, .9, 1.0));
-      const crouch = ss(seg(t, 1.0, 1.22)) * (1 - seg(t, 1.22, 1.3));
+      const bob = Math.abs(Math.sin(t * Math.PI * 2)) * .14 * (1 - seg(t, .9, 1.0));
+      const crouch = ss(seg(t, 1.0, 1.22)) * (1 - seg(t, 1.22, 1.28));
       const air = t > 1.25 && t < 1.85 ? Math.sin(Math.PI * (t - 1.25) / .6) : 0;
-      const land = t >= 1.85 ? Math.exp(-(t - 1.85) * 8) * Math.cos((t - 1.85) * 22) : 0;
-      const open = ss(seg(t, 1.2, 1.45));
-      const wig = Math.sin(t * 9) * .08 * open;
+      const land = t >= 1.85 ? Math.exp(-(t - 1.85) * 7) * Math.cos((t - 1.85) * 20) : 0;
+      const open = ss(seg(t, 1.2, 1.4));
+      const wig = Math.sin(t * 14) * .25 * open;
+      const hops = t > 2.25 ? Math.abs(Math.sin((t - 2.25) * Math.PI * 2)) * .3 : 0;   // 신나서 박자마다 콩콩
+      const spin = ss(seg(t, 1.3, 1.8)) * Math.PI * 2;
       sq.pose({
-        jump: bob + air * .8, squash: 1 - crouch * .2 + air * .12 - land * .2,
-        armL: [lerp(.35, .25, open), lerp(.5, 2.35, open) + wig], armR: [lerp(.35, .25, open), lerp(.5, 2.35, open) - wig],
-        mouth: lerp(1.1, 1.45, open), eye: 1 + land * .08, ear: -.1 * open, headTilt: Math.sin(t * 4.2) * .06, tailSway: Math.sin(t * 5) * .08 - air * .15,
+        jump: bob + air * 1.25 + hops, squash: 1 - crouch * .38 + air * .28 - land * .4 + (hops > 0 ? (.3 - hops) * .25 : 0),
+        armL: [lerp(.35, .2, open), lerp(.6, 2.55, open) + wig], armR: [lerp(.35, .2, open), lerp(.6, 2.55, open) - wig],
+        mouth: lerp(1.2, 1.9, open), eye: 1 + air * .3 + open * .1, ear: -.3 * open, headTilt: Math.sin(t * 7) * .16 * open, tailSway: Math.sin(t * 9) * .2 - air * .35, tailPuff: 1 + .12 * open,
       });
-      sq.root.rotation.y = faceCam(C.az) - .1;
+      sq.root.rotation.y = faceCam(C.az) - .1 + spin;
       sign.rotation.y = faceCam(C.az) - .35;
     },
     anchors: { sq: sq.anchors.headTop },
@@ -94,7 +96,7 @@ function cut2(scene) {
   const sq = makeSquirrel(); sq.root.position.set(1.35, 0, .5); sq.root.rotation.y = -Math.PI / 2 + .6; W.add(sq.root);
   const doc = labelBoard(.62, .8, PROPS.docs.replace(' ', '\n'), { bg: '#ffffff', fg: '#3a3a4a', edge: '#e3e3ea', d: .03, font: '"Jua"' }); W.add(doc);
   EV.push({ t: .25, type: 'pop', n: 2 }, { t: .5, type: 'pop', n: 3 }, { t: .75, type: 'paper' }, { t: 1.0, type: 'bubble' }, { t: 2.6, type: 'cut' });
-  for (let k = 0; k < 4; k++) EV.push({ t: 2.75 + k * .25 + .125, type: 'wood', n: k });
+  for (let k = 0; k < 6; k++) EV.push({ t: 2.75 + k * .25 + .125, type: 'wood', n: k });
   EV.push({ t: 3.0, type: 'siren', d: 5 }, { t: 4.5, type: 'gap' }, { t: 4.75, type: 'cut' }, { t: 4.75, type: 'shock' }, { t: 4.75, type: 'bubble' });
   const shot = t => t < 2.6 ? 'A' : t < 4.75 ? 'B' : 'C';
   return {
@@ -108,7 +110,7 @@ function cut2(scene) {
     },
     update(t, C) {
       riseTiles(isl.tiles, t, [0, 0, 0]);
-      popIn(wall, t, .25); riseIn(counter, t, .5, 0, 1.6);
+      popIn(wall, t, .25); riseIn(counter, t, .5, 0, 1.6); bank.visible = t < 2.6;
       // 서류: 다람쥐 손 → 카운터 위로 미끄러짐
       const k = ss(seg(t, .75, 1.05));
       doc.visible = true;
@@ -118,18 +120,21 @@ function cut2(scene) {
       const on = t > 3.0, fl = on ? .5 + .5 * Math.cos((t - 3.0) * Math.PI * 4) : 0;
       domeM.emissiveIntensity = on ? .6 + fl * 1.8 : 0; sl.intensity = on ? .6 + fl * 3.2 : 0; dome.rotation.y = t * 6;
       // 직원: 서류 받기 → 말하기 → 고개 젓기
-      const shake = t > 2.75 && t < 3.85 ? Math.sin((t - 2.75) * Math.PI * 4) * .5 * env(t, 2.75, 3.85, .1, .2) : 0;
-      owl.pose({ turn: shake, nod: lerp(0, .12, ss(seg(t, 1.0, 1.4))) + Math.sin(t * 7) * .03 * env(t, 1.0, 2.6), sad: ss(seg(t, 2.4, 2.8)), tilt: -.08 * ss(seg(t, 2.4, 2.8)), wing: .5 * env(t, .9, 1.6) });
+      const shake = t > 2.75 && t < 4.25 ? Math.sin((t - 2.75) * Math.PI * 4) * 1.0 * env(t, 2.75, 4.25, .08, .25) : 0;
+      const cross = env(t, 3.0, 4.6, .15, .25);
+      owl.pose({ turn: shake, nod: lerp(0, .18, ss(seg(t, 1.0, 1.4))) + Math.sin(t * 9) * .08 * env(t, 1.0, 2.6), sad: ss(seg(t, 2.4, 2.7)) * 1.4, tilt: -.15 * ss(seg(t, 2.4, 2.8)) + shake * .2, wing: .9 * env(t, .9, 1.6) + 1.3 * cross, cross, sway: -shake * .12, hop: Math.abs(Math.sin(t * Math.PI * 4)) * .05 * cross });
       // 다람쥐: 기대 → 움찔 → 충격
-      const hop = Math.abs(Math.sin(t * Math.PI * 2)) * .05 * (1 - seg(t, 2.4, 2.6));
-      const flinch = t > 3.0 ? Math.exp(-(t - 3.0) * 7) * Math.sin((t - 3.0) * 25) : 0;
-      const shock = ss(seg(t, 4.75, 5.0));
-      const tremble = Math.sin(t * 60) * .012 * shock;
+      const hop = Math.abs(Math.sin(t * Math.PI * 2)) * .2 * (1 - seg(t, 2.4, 2.6));
+      const flinch = t > 3.0 ? Math.exp(-(t - 3.0) * 6) * Math.sin((t - 3.0) * 22) : 0;
+      const fj = t > 3.0 && t < 3.35 ? Math.sin(Math.PI * (t - 3.0) / .35) * .45 : 0;   // 경광등에 깜짝 점프
+      const shock = ss(seg(t, 4.75, 4.95)), stiff = t > 4.75 ? Math.exp(-(t - 4.75) * 6) * Math.cos((t - 4.75) * 20) : 0;
+      const tremble = Math.sin(t * 70) * .035 * shock;
+      const give = env(t, .2, 1.0, .2, .2);
       sq.pose({
-        jump: hop, squash: 1 - flinch * .12 - shock * .04,
-        armL: [lerp(lerp(.4, 1.25, env(t, .2, 1.0, .2, .2)), 1.95, shock), lerp(.2, .55, shock)], armR: [lerp(lerp(.4, 1.25, env(t, .2, 1.0, .2, .2)), 1.95, shock), lerp(.2, .55, shock)],
-        ear: lerp(-.1, 1.0, shock), eye: 1 + .25 * shock + flinch * .1, mouth: lerp(1.15, 1.75, shock), lean: -.12 * shock + tremble, headTilt: .12 * shock, sweat: shock * ((t * 1.3) % 1),
-        tailSway: Math.sin(t * 4) * .05,
+        jump: hop + fj, squash: 1 - flinch * .2 + fj * .25 - shock * .1 + stiff * .25 + give * .08,
+        armL: [lerp(lerp(.4, 1.5, give), 2.3, shock), lerp(lerp(.2, .1, give), .45, shock) + tremble * 4], armR: [lerp(lerp(.4, 1.5, give), 2.3, shock), lerp(lerp(.2, .1, give), .45, shock) - tremble * 4],
+        ear: lerp(-.35 * (fj > 0 ? 1 : 0), 1.25, shock), eye: 1 + .5 * shock + fj * .5, mouth: lerp(1.15 + fj, 2.5, shock), lean: -.2 * shock + tremble, headTilt: .2 * shock + tremble * 2, sweat: shock * ((t * 1.6) % 1),
+        tailSway: Math.sin(t * 6) * .1, tailPuff: 1 + .25 * shock + fj * .4,
       });
     },
     anchors: { sq: sq.anchors.headTop, clerk: owl.anchors.headTop },
@@ -197,7 +202,7 @@ function cut3(scene) {
   const ss_ = labelBoard(1.3, .62, PROPS.shop, { bg: '#f2796b', fg: '#ffffff', edge: '#d65e50' }); ss_.position.y = 1.15; shopSign.add(ss_);
   shopSign.position.set(1.95, 0, -.35); W.add(shopSign);
   const puff = puffRing(9, .9); puff.position.set(1.95, 0, -.35); W.add(puff);
-  const sq = makeSquirrel(); sq.root.position.set(-1.75, 0, -.15); sq.root.scale.setScalar(.8); W.add(sq.root);
+  const sq = makeSquirrel(); sq.root.position.set(-1.45, 0, -.05); sq.root.scale.setScalar(.8); W.add(sq.root);
   EV.push({ t: 0, type: 'tile', n: 0 }, { t: 1.7, type: 'whoosh' }, { t: 1.95, type: 'stamp' }, { t: 3.0, type: 'cut' }, { t: 3.25, type: 'silence', d: .25 },
     { t: 3.5, type: 'lift' }, { t: 3.5, type: 'rise', n: 0, big: true }, { t: 3.75, type: 'pop', n: 4 }, { t: 3.55, type: 'shock' });
   const shot = t => t < 3.0 ? 'A' : 'B';
@@ -227,8 +232,9 @@ function cut3(scene) {
       popIn(awning, t, LIFT + .25);
       shopGlass.material.emissiveIntensity = t > LIFT ? .9 : .2;
       // 다람쥐: 3.35 깜짝 → 놀란 채로
-      const s = t - LIFT - .05, jmp = s > 0 && s < .4 ? Math.sin(Math.PI * s / .4) * .35 : 0, shock = ss(seg(t, LIFT + .05, LIFT + .2));
-      sq.pose({ jump: jmp, squash: 1 + jmp * .2, ear: -.25 * shock, eye: 1 + .32 * shock, mouth: lerp(1, 1.9, shock), armL: [lerp(.3, 1.9, shock), lerp(.2, .65, shock)], armR: [lerp(.3, 1.9, shock), lerp(.2, .65, shock)], lean: -.1 * shock, tailSway: Math.sin(t * 5) * .05 + .1 * shock });
+      const s = t - LIFT - .05, jmp = s > 0 && s < .5 ? Math.sin(Math.PI * s / .5) * .9 : 0, shock = ss(seg(t, LIFT + .05, LIFT + .18));
+      const lnd = s > .5 ? Math.exp(-(s - .5) * 7) * Math.cos((s - .5) * 20) : 0, flail = Math.sin(t * 26) * .45 * (s > 0 && s < .6 ? 1 : 0), tr = Math.sin(t * 70) * .03 * shock;
+      sq.pose({ jump: jmp, squash: 1 + jmp * .3 - lnd * .3 - (s < 0 ? ss(seg(t, 3.0, 3.4)) * .08 : 0), ear: -.45 * shock, eye: 1 + .6 * shock, mouth: lerp(1, 2.6, shock), armL: [lerp(.3, 2.2, shock), lerp(.2, 1.2, shock) + flail], armR: [lerp(.3, 2.2, shock), lerp(.2, 1.2, shock) - flail], lean: -.22 * shock + tr, headTilt: tr * 3, tailSway: Math.sin(t * 5) * .05 + .25 * shock, tailPuff: 1 + .35 * shock });
       sq.root.rotation.y = faceCam(C.az) + .35;
       shopSign.rotation.y = faceCam(C.az) * .6;
     },
@@ -254,7 +260,7 @@ function cut4(scene) {
       const u = clamp((t - LT[i]) / .8); if (u <= 0) return;
       const txt = l.replace(' ✅', '');
       g.font = `700 ${fs[i]}px "Gaegu"`; const w = g.measureText(txt).width, x = i === 1 ? (cw - w) / 2 : xs[i];
-      if (i === 2) chkPos = bpt(Math.min(xs[2] + w + 170, 1320), 690);
+      if (i === 2) chkPos = bpt(Math.min(xs[2] + w + 150, 1300), 690);
       g.save(); g.beginPath(); g.rect(x - 10, ys[i] - fs[i], (w + 20) * u, fs[i] * 2); g.clip();
       g.fillStyle = cols[i]; g.fillText(txt, x, ys[i]); g.restore();
       if (i === 0 && u >= 1) { g.strokeStyle = '#fff2a8'; g.lineWidth = 8; g.beginPath(); g.moveTo(xs[0], ys[0] + 70); g.lineTo(xs[0] + g.measureText('근린생활시설').width, ys[0] + 70); g.stroke(); }
@@ -295,7 +301,7 @@ function cut4(scene) {
     bpt, BW, BH,
     cam(t) {
       if (shot(t) === 'A') { const u = seg(t, 0, 7); return { tg: [lerp(-.25, .45, ss(u)), 2.25, -.2], az: lerp(14, 24, u), el: 18, fh: lerp(9.0, 8.6, u), oy: 0 }; }
-      const u = seg(t, 7, 10); const p = bpt(720, 560); return { tg: [p.x, p.y + .1, p.z + .2], az: lerp(10, 6, u), el: 12, fh: lerp(6.6, 6.3, ss(u)), oy: 0 };
+      const u = seg(t, 7, 10); const p = bpt(800, 560); return { tg: [p.x, p.y + .25, p.z + .2], az: lerp(10, 6, u), el: 12, fh: lerp(7.3, 7.0, ss(u)), oy: 0 };
     },
     update(t, C) {
       riseTiles(isl.tiles, t, [0, 0, 0]);
@@ -312,12 +318,13 @@ function cut4(scene) {
       const pointTable = Math.max(pt(1.0, 2.2), pt(4.2, 5.0));
       const showLedger = pt(6.2, 7.6), cheer = ss(seg(t, 7.6, 7.85));
       sq.pose({
-        armR: [lerp(lerp(.3, 1.35, pointTable), 1.2, pointBoard) * (1 - cheer) + .3 * cheer, lerp(lerp(.15, .35, pointTable), 1.95, pointBoard) * (1 - cheer) + 2.3 * cheer],
-        armL: [lerp(1.0, .8, showLedger), lerp(.2, 1.9, showLedger) * (1 - cheer) + 2.2 * cheer],
-        jump: Math.abs(Math.sin((t - 7.75) * Math.PI * 2)) * .12 * cheer, mouth: 1.2 + .3 * cheer, eye: 1, headTurn: .25 * pointBoard - .15 * pointTable, headNod: -.12 * pointBoard,
+        armR: [lerp(lerp(.3, 1.35, pointTable), 1.2, pointBoard) * (1 - cheer) + .3 * cheer, lerp(lerp(.15, .35, pointTable), 1.95, pointBoard) * (1 - cheer) + 2.5 * cheer - Math.sin(t * 14) * .2 * cheer],
+        armL: [lerp(1.0, .6, showLedger), lerp(.2, 2.4, showLedger) * (1 - cheer) + 2.5 * cheer + Math.sin(t * 14) * .2 * cheer],
+        jump: Math.abs(Math.sin((t - 7.75) * Math.PI * 2)) * .4 * cheer + .12 * Math.max(...[.3, 1.0, 1.25, 1.5, 3.6, 4.0, 5.3, 6.2].map(a => t > a && t < a + .25 ? Math.sin(Math.PI * (t - a) / .25) : 0)), mouth: 1.3 + .7 * cheer, eye: 1 + .15 * cheer + .1 * pointBoard, headTurn: .35 * pointBoard - .25 * pointTable, headNod: -.18 * pointBoard, headTilt: Math.sin(t * 6) * .1, tailPuff: 1 + .1 * cheer,
         tailSway: Math.sin(t * 4) * .07,
       });
       sq.root.rotation.y = faceCam(C.az) + .35 - .25 * pointBoard;
+      sq.root.position.x = t >= 7 ? -1.8 : -.95;
     },
     anchors: { sq: sq.anchors.headTop },
   };

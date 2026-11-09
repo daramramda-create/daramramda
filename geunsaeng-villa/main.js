@@ -128,7 +128,8 @@ function hud(t) {
   }
   // 헤드라인
   if (CD.head && t >= CD.head.t0) {
-    const font = `400 ${86 * PX}px ${FONT_HEAD}`;
+    let fs = 86; g.font = `400 ${fs * PX}px ${FONT_HEAD}`; const mw = g.measureText(CD.head.text).width; if (mw > 800 * PX) fs = Math.floor(fs * 800 * PX / mw);
+    const font = `400 ${fs * PX}px ${FONT_HEAD}`;
     riseText([CD.head.text], W / 2, 360 * PX, 0, font, t, CD.head.t0, { step: .04, color: '#ffffff', stroke: 14, strokeC: CUT === 2 ? '#c8323a' : '#5a4a8a' });
     g.font = font; const tw = g.measureText(CD.head.text).width;
     TX.push({ id: 'head', text: CD.head.text, x0: W / 2 - tw / 2, y0: 280 * PX, x1: W / 2 + tw / 2, y1: 390 * PX });
