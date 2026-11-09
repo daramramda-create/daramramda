@@ -186,6 +186,7 @@ def build(c):
     if c == 1:
         for k in range(3): add(bed, chirp(.05), .4 + k * 1.2, 1.0, rng.uniform(-.7, .7))
     mus = sfx.compress(mus, .3, 2.5) if mus.ndim == 1 else np.stack([sfx.compress(mus[:, i], .3, 2.5) for i in (0, 1)], 1)
+    fol = np.stack([sfx.compress(fol[:, i], .22, 4.0, .002, .12) for i in (0, 1)], 1)
     mix = mus * .55 + fol * .85 + bed
     mix = mix[:int(dur * SR)]
     mix = mix * (.85 / max(1e-9, np.abs(mix).max()))
