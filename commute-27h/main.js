@@ -89,7 +89,7 @@ function coverTitle(T, t) {
     const bw = 840 * PX, bh = 470 * PX, cy = 485 * PX, x0 = W / 2 - bw / 2;
     g.save(); g.translate(W / 2, cy); g.scale(k, k); g.translate(-W / 2, -cy);
     g.shadowColor = 'rgba(38,48,95,.22)'; g.shadowBlur = 34 * PX; g.shadowOffsetY = 10 * PX;
-    g.fillStyle = 'rgba(255,255,255,.96)'; rr(x0, cy - bh / 2, bw, bh, 34 * PX); g.fill(); g.restore(); } }
+    g.fillStyle = 'rgba(255,255,255,.7)'; rr(x0, cy - bh / 2, bw, bh, 34 * PX); g.fill(); g.restore(); } }
   // 알약
   { const s = t - T.t0, k = popK(s); if (k > 0) {
     const font = `700 ${40 * PX}px "Noto Sans KR"`; g.font = font; const tw = g.measureText(T.pill).width;
@@ -116,8 +116,8 @@ function coverTitle(T, t) {
 }
 function roadSign(sub, t) {
   const al = ss(seg(t, sub.t0, sub.t0 + .12)) * (1 - ss(seg(t, sub.t1 - .1, sub.t1)));
-  const fs = sub.big ? 66 : 44, font = `${sub.big ? 900 : 700} ${fs * PX}px "Noto Sans KR"`;
-  const lines = wrapSpans(sub.text, font, 760 * PX), lh = fs * 1.42 * PX;
+  const fs = sub.big ? 82 : 54, font = `${sub.big ? 900 : 700} ${fs * PX}px "Noto Sans KR"`;
+  const lines = wrapSpans(sub.text, font, 780 * PX), lh = fs * 1.38 * PX;
   const tw = Math.max(...lines.map(l => spansW(l, font)));
   const pw = tw + 60 * PX, ph = lines.length * lh + 34 * PX, yb = (SAFE.b - 24) * PX, y0 = yb - ph, x0 = W / 2 - pw / 2;
   const k = 1 - Math.exp(-Math.max(0, t - sub.t0) * 14);
@@ -131,14 +131,14 @@ function roadSign(sub, t) {
 }
 function termCard(c, t) {
   const s = t - c.t0, k = popK(s); if (k <= 0) return;
-  const cy = 520 * PX, pw = 700 * PX, ph = 250 * PX, x0 = W / 2 - pw / 2, y0 = cy - ph / 2;
+  const cy = 540 * PX, pw = 800 * PX, ph = 290 * PX, x0 = W / 2 - pw / 2, y0 = cy - ph / 2;
   g.save(); g.translate(W / 2, cy); g.scale(k, k); g.translate(-W / 2, -cy);
   g.shadowColor = SH; g.shadowBlur = 30 * PX; g.shadowOffsetY = 10 * PX;
   g.fillStyle = '#ffffff'; rr(x0, y0, pw, ph, 22 * PX); g.fill(); g.shadowColor = 'transparent';
-  g.fillStyle = '#1b2f5c'; rr(x0, y0, pw, 92 * PX, [22 * PX, 22 * PX, 0, 0]); g.fill();
+  g.fillStyle = '#1b2f5c'; rr(x0, y0, pw, 112 * PX, [22 * PX, 22 * PX, 0, 0]); g.fill();
   g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillStyle = '#ffd23f'; g.font = `900 ${70 * PX}px "Noto Sans KR"`; g.fillText(c.word, W / 2, y0 + 50 * PX);
-  g.fillStyle = '#1b2f5c'; g.font = `900 ${50 * PX}px "Noto Sans KR"`; g.fillText(c.def, W / 2, y0 + 172 * PX);
+  g.fillStyle = '#ffd23f'; g.font = `900 ${86 * PX}px "Noto Sans KR"`; g.fillText(c.word, W / 2, y0 + 60 * PX);
+  g.fillStyle = '#1b2f5c'; g.font = `900 ${60 * PX}px "Noto Sans KR"`; g.fillText(c.def, W / 2, y0 + 202 * PX);
   g.restore();
   if (s > .3) TX.push({ id: 'card', text: c.word + c.def, x0, y0, x1: x0 + pw, y1: y0 + ph });
 }
@@ -158,8 +158,8 @@ function clockHud(t) {
 function hud(t) {
   g.clearRect(0, 0, W, H); TX = [];
   if (QS.get('nohud')) return;
-  if (CD.title) coverTitle(CD.title, t);
-  if (CD.head && t >= CD.head.t0) boardPanel(CD.head.text, 320 * PX, t, CD.head.t0, 58, 'head');
+  if (CD.title && t < CD.title.t1) { g.save(); g.globalAlpha = 1 - ss(seg(t, CD.title.t1 - .3, CD.title.t1)); coverTitle(CD.title, t); g.restore(); }
+  if (CD.head && t >= CD.head.t0) boardPanel(CD.head.text, 330 * PX, t, CD.head.t0, 70, 'head');
   if (CD.card) termCard(CD.card, t);
   clockHud(t);
   const sub = (CD.subs || []).find(s => t >= s.t0 && t < s.t1); if (sub) roadSign(sub, t);
