@@ -268,7 +268,7 @@ function cut4(scene) {
   const R = mulberry(9), EV = [];
   const town = buildTown(scene, { seed: 41, residential: (x, z) => x < 0, special: [{ x: 20, z: 20, kind: 'park', clear: [0, 0, 0] }], skip: [[COMPANY.x, COMPANY.z - 7.75], [COMPANY.x, COMPANY.z + 7.75], [HOME.x, HOME.z]] });
   const HB = heroBuildings(town.root, R); HB.home.children[HB.home.children.length - 1].visible = false;
-  const cars = makeCars(town.root, 30, 12), walkers = makeWalkers(town.root, 70, 13);
+  const cars = makeCars(town.root, 30, 12, (road, ax) => !(road === 0 && ax === 'x')), walkers = makeWalkers(town.root, 70, 13);
   // 두 건물 사이 한 걸음: 발자국 + 도보 1분 표지
   const foot = [];
   for (let i = 0; i < 6; i++) { const f = mesh(new THREE.CircleGeometry(.32, 16), M('#ffffff'), 18.3 + i * .55, .2, -7.2 + (i % 2) * .5); f.rotation.x = -Math.PI / 2; f.castShadow = false; f.scale.set(.7, 1.3, 1); town.root.add(f); foot.push(f); }

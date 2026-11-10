@@ -119,7 +119,7 @@ export function buildTown(scene, o = {}) {
 }
 
 // 차: 도로 위 차선을 따라 움직인다. simT(초)를 받아 위치 갱신
-export function makeCars(root, n = 26, seed = 3) {
+export function makeCars(root, n = 26, seed = 3, keep = () => true) {
   const R = mulberry(seed), cars = [];
   const L = 160;
   for (let i = 0; i < n; i++) {
@@ -130,6 +130,7 @@ export function makeCars(root, n = 26, seed = 3) {
     const cab = box(big ? len * .95 : len * .55, big ? .6 : .65, wd * .92, M('#1b2430', { roughness: .15, metalness: .3 }), big ? 0 : -.2, big ? 2.1 : 1.55, 0);
     const shadow = mesh(new THREE.PlaneGeometry(len * 1.1, wd * 1.2), new THREE.MeshBasicMaterial({ color: '#000', transparent: true, opacity: .25, depthWrite: false }), 0, .03, 0); shadow.rotation.x = -Math.PI / 2; shadow.castShadow = false;
     const brake = box(.1, .25, wd * .8, M('#ff3020', { emissive: '#ff2010', emissiveIntensity: .8 }), -len / 2, .9, 0);
+    if (!keep(road, ax)) continue;
     const g = grp(body, cab, shadow, brake); root.add(g);
     cars.push({ g, road, ax, dir, off: R() * L, v: 7 + R() * 5, lane: dir * 2.2 });
   }
