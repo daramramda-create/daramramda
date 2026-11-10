@@ -80,6 +80,40 @@ function boardPanel(text, cy, t, t0, fs, id) {
   if (s > .3) TX.push({ id, text: plain(text), x0, y0, x1: x0 + pw, y1: y0 + ph });
 }
 // 파란 도로 표지판 자막
+// 릴스 커버 제목: 흰 알약 + 굵은 남색 큰 글씨 두 줄 + 피치/민트 형광펜 띠
+function coverTitle(T, t) {
+  const NAVY = '#26305f', BARS = ['rgba(253,200,184,.88)', 'rgba(198,236,220,.92)'];
+  const items = [];
+  // 제목 뒤 흰 박스 (강조)
+  { const k = popK(t - T.t0); if (k > 0) {
+    const bw = 840 * PX, bh = 470 * PX, cy = 485 * PX, x0 = W / 2 - bw / 2;
+    g.save(); g.translate(W / 2, cy); g.scale(k, k); g.translate(-W / 2, -cy);
+    g.shadowColor = 'rgba(38,48,95,.22)'; g.shadowBlur = 34 * PX; g.shadowOffsetY = 10 * PX;
+    g.fillStyle = 'rgba(255,255,255,.96)'; rr(x0, cy - bh / 2, bw, bh, 34 * PX); g.fill(); g.restore(); } }
+  // 알약
+  { const s = t - T.t0, k = popK(s); if (k > 0) {
+    const font = `700 ${40 * PX}px "Noto Sans KR"`; g.font = font; const tw = g.measureText(T.pill).width;
+    const pw = tw + 80 * PX, ph = 80 * PX, cy = 330 * PX, x0 = W / 2 - pw / 2;
+    g.save(); g.translate(W / 2, cy); g.scale(k, k); g.translate(-W / 2, -cy);
+    g.shadowColor = 'rgba(38,48,95,.18)'; g.shadowBlur = 20 * PX; g.shadowOffsetY = 5 * PX;
+    g.fillStyle = '#eceefa'; rr(x0, cy - ph / 2, pw, ph, ph / 2); g.fill(); g.shadowColor = 'transparent';
+    g.fillStyle = NAVY; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(T.pill, W / 2, cy + 3 * PX);
+    g.restore(); items.push([x0, cy - ph / 2, x0 + pw, cy + ph / 2]); } }
+  // 큰 두 줄
+  T.lines.forEach((line, i) => {
+    const s = t - (T.t0 + .12 + i * .14), k = popK(s); if (k <= 0) return;
+    let fs = 132; g.font = `900 ${fs * PX}px "Noto Sans KR"`; let tw = g.measureText(line).width;
+    if (tw > 740 * PX) { fs *= 740 * PX / tw; g.font = `900 ${fs * PX}px "Noto Sans KR"`; tw = g.measureText(line).width; }
+    const cy = (480 + i * 158) * PX, x0 = W / 2 - tw / 2;
+    g.save(); g.translate(W / 2, cy); g.scale(k, k); g.translate(-W / 2, -cy);
+    g.fillStyle = BARS[i]; rr(x0 - 22 * PX, cy + fs * PX * .02, tw + 44 * PX, fs * PX * .42, 10 * PX); g.fill();   // 형광펜 띠 (글자 아래 절반)
+    g.shadowColor = 'transparent';
+    g.fillStyle = NAVY; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(line, W / 2, cy);
+    g.shadowBlur = 0; g.shadowColor = 'transparent'; g.fillText(line, W / 2, cy);
+    g.restore(); items.push([x0, cy - fs * PX * .55, x0 + tw, cy + fs * PX * .5]);
+  });
+  if (t - T.t0 > .5 && items.length) TX.push({ id: 'title', text: T.pill + T.lines.join(''), x0: Math.min(...items.map(b => b[0])), y0: items[0][1], x1: Math.max(...items.map(b => b[2])), y1: items[items.length - 1][3] });
+}
 function roadSign(sub, t) {
   const al = ss(seg(t, sub.t0, sub.t0 + .12)) * (1 - ss(seg(t, sub.t1 - .1, sub.t1)));
   const fs = sub.big ? 66 : 44, font = `${sub.big ? 900 : 700} ${fs * PX}px "Noto Sans KR"`;
@@ -124,7 +158,7 @@ function clockHud(t) {
 function hud(t) {
   g.clearRect(0, 0, W, H); TX = [];
   if (QS.get('nohud')) return;
-  if (CD.title) boardPanel(CD.title.text, 330 * PX, t, CD.title.t0, 76, 'title');
+  if (CD.title) coverTitle(CD.title, t);
   if (CD.head && t >= CD.head.t0) boardPanel(CD.head.text, 320 * PX, t, CD.head.t0, 58, 'head');
   if (CD.card) termCard(CD.card, t);
   clockHud(t);

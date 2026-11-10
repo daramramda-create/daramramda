@@ -46,7 +46,7 @@ export function makeSquirrel() {
   const eyes = [-1, 1].map(s => { const g = new THREE.Group(); g.position.set(s * .34, .03, .7);
     g.add(ell(.135 * .82, .135 * 1.06, .135 * .5, SQ.eye, 0, 0, 0, MATTE(SQ.eye)));
     const hl = ell(.045, .045, .045, '#ffffff', .04, .06, .06, M('#ffffff', { emissive: '#ffffff', emissiveIntensity: .3 })); hl.castShadow = false; g.add(hl);
-    const lid = ell(.15 * .9, .15 * .62, .15 * .55, SQ.cream, 0, .2, .03); g.add(lid); g.userData.lid = lid; F.add(g); return g; });
+    const lid = ell(.15 * .9, .15 * .62, .15 * .55, SQ.body, 0, .2, .03); g.add(lid); g.userData.lid = lid; F.add(g); return g; });
   F.add(ell(.072 * 1.35, .072 * .8, .072 * .6, SQ.nose, 0, -.12, .8, MATTE(SQ.nose)));
   const mouth = ell(.075 * .9, .075 * 1.1, .075 * .5, SQ.mouth, 0, -.3, .76, MATTE(SQ.mouth)); F.add(mouth);
   [-1, 1].forEach(s => { const c = ell(.15, .15, .012, SQ.blush, s * .58, -.18, .63, M(SQ.blush, { roughness: .7 })); c.rotation.y = s * .55; c.castShadow = false; F.add(c); });

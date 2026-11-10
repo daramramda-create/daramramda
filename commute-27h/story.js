@@ -7,12 +7,11 @@ export const CUTS = {
   0: { dur: 1, subs: [] },   // 모델 확인용
   1: {
     dur: 6.0,
-    title: { text: '출퇴근만 한 달 [27시간]?!', t0: 0, t1: 6.0 },
+    // 커버: 흰 알약 소제목 + 아주 굵은 남색 두 줄 + 형광펜 띠 (사용자 레퍼런스 스타일)
+    title: { pill: 'POV: 출퇴근 시간 처음 계산해 본 직장인', lines: ['출퇴근만 한 달', '27시간?!'], text: 'POV: 출퇴근 시간 처음 계산해 본 직장인 / 출퇴근만 한 달 27시간?!', t0: 0, t1: 6.0 },
     subs: [
-      { text: 'POV: 출퇴근 시간 처음 계산해 본 직장인.', t0: .3, t1: 3.4 },
       { text: '한 달에… [27시간]?', t0: 3.4, t1: 6.0, big: true },
     ],
-    clock: [[0, 40]],
   },
   2: {
     dur: 7.0,
@@ -53,7 +52,7 @@ export const PROPS = { office: '회사', home: '새 집', walk: '도보 1분', b
 export function allText() {
   const out = [];
   for (const c of Object.values(CUTS)) {
-    if (c.title) out.push(c.title.text);
+    if (c.title) out.push(c.title.text, ...(c.title.lines || []), c.title.pill || '');
     if (c.head) out.push(c.head.text);
     if (c.card) out.push(c.card.word, c.card.def);
     (c.subs || []).forEach(s => out.push(s.text));

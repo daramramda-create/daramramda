@@ -65,12 +65,12 @@ function cut1(scene) {
     st.position.set(x, 2.04, -.25); W.add(st); straps.push({ st, x, len });
   }
   W.add(mesh(new THREE.CylinderGeometry(.022, .022, 2.3, 12), M('#c9ced6', { metalness: .7, roughness: .3 }), -1.2, 1.15, .2));
-  W.add(mesh(new THREE.CylinderGeometry(.025, .025, 2.3, 12), M('#f2c230', { metalness: .3, roughness: .4 }), .4, 1.15, -.12));   // 다람쥐가 잡는 세로 봉
+  W.add(mesh(new THREE.CylinderGeometry(.025, .025, 2.3, 12), M('#f2c230', { metalness: .3, roughness: .4 }), 1.05, 1.15, -.3));
   // 승객 (만원): 다람쥐 양옆과 카메라 앞 흐린 전경
   const pas = [
-    [-.85, -.35, .3, { phone: true }], [.7, -.45, -.5, { arm: true }], [-1.6, -.1, .6, {}], [1.5, -.2, -.3, { phone: true }],
+    [-.5, -.3, .5, {}], [.36, -.42, -.5, { phone: true }], [-.1, -.85, 0, {}], [-1.15, -.2, .6, { phone: true }], [1.05, -.25, -.4, { arm: true }],
     [-.6, 1.1, 3.0, {}], [1.9, 1.0, 3.3, {}], [-2.3, -.6, .2, { arm: true }], [2.4, -.7, -.2, {}], [-3.1, -.3, .5, { phone: true }],
-  ].map(([x, z, ry, o]) => { const p = passenger(R, o); p.position.set(x, 0, z); p.rotation.y = ry; W.add(p); return p; });
+  ].map(([x, z, ry, o]) => { const p = passenger(R, o); p.position.set(x, 0, z); p.userData.x0 = x; p.rotation.y = ry; W.add(p); return p; });
   // 다람쥐 (배우: 실제보다 크게, 매끈하게)
   const sq = makeSquirrel(); const SC = .58; sq.root.scale.setScalar(SC); sq.root.position.set(-.1, 0, -.25); W.add(sq.root);
   // 창밖 동네: 고가 아래로 지나간다
@@ -84,9 +84,9 @@ function cut1(scene) {
     cam(t) {
       const u = ss(seg(t, 0, 6)), jolt = t > 4.0 ? Math.exp(-(t - 4.0) * 8) * Math.sin((t - 4.0) * 40) * .01 : 0;
       const pos = [lerp(1.5, 1.3, u), 1.45 + jolt, lerp(2.6, 2.3, u)];
-      return { pos, look: [-.05, .82, -.5], fov: 40, near: .05, far: 600,
-        focus: V(...pos).distanceTo(V(-.1, .9, -.25)), aper: 12, maxCoc: 20,
-        band: { at: [-.1, .95, -.25], w: .13, amp: 20, mix: .55 } };
+      return { pos, look: [-.05, .93, -.5], fov: 40, near: .05, far: 600,
+        focus: V(...pos).distanceTo(V(-.1, 1.0, -.25)), aper: 12, maxCoc: 20,
+        band: { at: [-.1, 1.0, -.25], w: .14, amp: 20, mix: .55 } };
     },
     sun: t => ({ az: 160, el: 38, target: [0, 1, 0], span: 6 }),
     light(t, { sun, hemi }) { sun.intensity = 2.2; hemi.intensity = 1.25; },
@@ -98,16 +98,21 @@ function cut1(scene) {
       // 흔들림: 열차가 달리는 리듬
       const sway = Math.sin(t * 2.2) * .03 + Math.sin(t * 5.3) * .008;
       W.children.forEach(o => { if (o.userData.p) { } });
-      pas.forEach((p, i) => { p.rotation.z = sway * (i % 2 ? 1 : -.8); });
+      // 만원: 양옆 승객이 흔들림마다 다람쥐 쪽으로 밀고 들어온다
+      const press = .5 + .5 * Math.sin(t * 2.2 * 2) * .6 + .4 * Math.max(0, Math.sin(t * 1.3));
+      pas.forEach((p, i) => { p.rotation.z = sway * (i % 2 ? 1 : -.8); p.position.x = p.userData.x0 + (i === 0 ? 1 : i === 1 ? -1 : 0) * press * .07; });
       straps.forEach(({ st, x }) => { st.rotation.x = Math.sin(t * 2.2 + x) * .12; });
       // 다람쥐: 멍 → 4.0 띠용
       const boing = t > 4.0 ? Math.exp(-(t - 4.0) * 5) * Math.cos((t - 4.0) * 24) : 0, wake = ss(seg(t, 3.95, 4.05));
       const slip = t > 4.0 && t < 4.6 ? Math.sin(Math.PI * (t - 4.0) / .6) : 0;
+      // 꽉 끼어 찌그러진 몸 (좁고 길게), 질끈 감은 눈, 눌린 귀, 땀
+      const squeeze = (1.16 + press * .09) * (1 - wake * .5) + wake * .5 * 1.05;
+      const strug = Math.sin(t * 9) * .06 * (1 - wake);
       sq.pose({
-        armR: [.25 - slip * .3, 1.45 - slip * .6], armL: [.3, .15 + Math.sin(t * 2.2) * .05],
-        lid: lerp(.62, 0, wake), eye: 1 + wake * .45 + boing * .25, mouth: lerp(.75, 2.1, wake), ear: lerp(.55, -.45, wake),
-        jump: boing * .08 + slip * .06, squash: 1 + boing * .14, headTilt: lerp(sway * 3 + .12, Math.sin(t * 30) * .05 * wake, wake), headNod: lerp(.12, -.08, wake), lean: sway,
-        tailSway: Math.sin(t * 2.2) * .08, tailPuff: 1 + .3 * wake,
+        armR: [lerp(.6, .3, wake) + strug, lerp(2.7, 2.9, wake) - slip * .5], armL: [lerp(.9, .4, wake), lerp(.25, 2.6, wake) + strug],
+        lid: lerp(.78 + .1 * Math.sin(t * 5), 0, wake), eye: 1 + wake * .5 + boing * .25, mouth: lerp(.6 + .15 * Math.abs(Math.sin(t * 6)), 2.2, wake), ear: lerp(1.1, -.45, wake),
+        jump: boing * .1 + slip * .06 + press * .03, squash: squeeze + boing * .1, headTilt: lerp(sway * 4 + .18 * Math.sin(t * 2.2), Math.sin(t * 30) * .05 * wake, wake), headNod: lerp(.15, -.08, wake), lean: sway * 1.5,
+        tailSway: Math.sin(t * 2.2) * .08, tailPuff: lerp(.82, 1.3, wake), sweat: (1 - wake) * ((t * 1.5) % 1),
       });
       sq.root.rotation.y = .1;
     },
@@ -267,13 +272,13 @@ function cut4(scene) {
   // 두 건물 사이 한 걸음: 발자국 + 도보 1분 표지
   const foot = [];
   for (let i = 0; i < 6; i++) { const f = mesh(new THREE.CircleGeometry(.32, 16), M('#ffffff'), 18.3 + i * .55, .2, -7.2 + (i % 2) * .5); f.rotation.x = -Math.PI / 2; f.castShadow = false; f.scale.set(.7, 1.3, 1); town.root.add(f); foot.push(f); }
-  const ws = grp(cyl(.08, .08, 2.4, 12, '#6b7480', 0, 1.2, 0)); const wsb = signBoard(3.2, 1.0, PROPS.walk, { bg: '#1f9e5c', fg: '#ffffff', fs: [.62], edge: '#16804a', d: .12, px: 80 }); wsb.position.y = 2.6; ws.add(wsb); ws.position.set(22.4, .18, -7.2); town.root.add(ws);
+  const ws = grp(cyl(.08, .08, 1.4, 12, '#6b7480', 0, .7, 0)); const wsb = signBoard(2.6, .85, PROPS.walk, { bg: '#1f9e5c', fg: '#ffffff', fs: [.62], edge: '#16804a', d: .12, px: 80 }); wsb.position.y = 1.7; ws.add(wsb); ws.position.set(21.6, .18, -2.3); ws.rotation.y = -.15; town.root.add(ws);
   // 벤치 + 다람쥐 + 커피
   const bench = grp(box(3.2, .12, .9, '#a8784e', 0, .62, 0), box(3.2, .7, .12, '#a8784e', 0, 1.05, -.42), box(.15, .6, .7, '#4a4f58', -1.3, .3, 0), box(.15, .6, .7, '#4a4f58', 1.3, .3, 0));
   bench.position.set(19.6, .18, -3.6); town.root.add(bench);
   const sq = makeSquirrel(); const SC = 1.25; sq.root.scale.setScalar(SC); sq.root.position.set(19.6, .5, -3.7); town.root.add(sq.root);
   const cup = grp(cyl(.22, .17, .5, 16, '#ffffff', 0, 0, 0), cyl(.225, .2, .18, 16, '#a0603c', 0, -.02, 0), cyl(.23, .23, .06, 16, '#3a3f48', 0, .27, 0));
-  sq.arms[0].paw.add(cup); cup.position.set(.05, -.05, .22); cup.scale.setScalar(.8);
+  sq.arms[0].a.add(cup); cup.position.set(.06, -.3, .16); cup.scale.setScalar(.55);
   EV.push({ t: .25, type: 'ting' }, { t: 0, type: 'amb', what: 'city', d: 6 }, { t: 6.0, type: 'speedup' }, { t: 6.0, type: 'amb', what: 'lapse', d: 2 }, { t: 7.55, type: 'doorClose' });
   for (let k = 48; k < 64; k++) EV.push({ t: k / 8, type: 'tick' });
   [1.4, 4.2].forEach(t => EV.push({ t: t + .45, type: 'sip' }));
