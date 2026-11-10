@@ -1,0 +1,24 @@
+출퇴근 한 달 27시간 / 직주근접 (4 cuts, 9:16) — third-party assets and tools
+
+Character
+- Squirrel: based on the illustration supplied by the user (their own material), rebuilt in 3D in code.
+
+Facts
+- All figures (36.5 + 37.4 = 74 min/day, x22 days = 27 h/month, 40.2 % / 17.8 % moving reasons,
+  top-5 subscription complexes near offices) come from the user's script. Not independently verified.
+
+Fonts (subsets, self-hosted in fonts/)
+- Noto Sans KR — SIL Open Font License 1.1 — https://fonts.google.com/noto/specimen/Noto+Sans+KR
+- Overpass Mono — SIL Open Font License 1.1 — https://fonts.google.com/specimen/Overpass+Mono
+
+Code and libraries
+- three.js r170 (incl. RoomEnvironment) — MIT — https://threejs.org
+- Tilt-shift post pass adapted from the Lemo-Opuscar tilt-shift demo — MIT — https://github.com/lemomo-ai/lemo-opuscar
+- Lemo-Opuscar core tools (render, mux, sfx) — MIT
+
+Audio
+- Music, foley and ambience synthesized in code (mix.py, core/audio/sfx.py). No samples, no recordings.
+- No voice: narration appears as on-screen captions.
+
+Tools
+- ffmpeg (imageio-ffmpeg build from PyPI) — LGPL/GPL — https://ffmpeg.org
