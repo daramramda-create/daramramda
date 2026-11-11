@@ -185,7 +185,7 @@ function gaugeHud(t) {
   g.restore();
   TX.push({ id: 'gauge', text: '분노 게이지', x0, y0, x1: x0 + w, y1: y0 + h, pass: true });
   // 펑! 섬광
-  if (bt > 0 && bt < 1.2) { g.save(); g.globalAlpha = Math.max(0, 1 - bt / .6); g.fillStyle = '#fffbe8'; g.fillRect(0, 0, W, H); g.restore();
+  if (bt > 0 && bt < 1.2) { g.save(); g.globalAlpha = Math.max(0, .85 - bt / .3); g.fillStyle = '#fff3d0'; g.fillRect(0, 0, W, H); g.restore();
     g.save(); const k = popK(bt); g.translate(W / 2, 560 * PX); g.scale(k, k); g.rotate(-.08); g.font = `900 ${150 * PX}px "Noto Sans KR"`; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.lineWidth = 16 * PX; g.strokeStyle = '#1b2f5c'; g.globalAlpha = 1 - ss(seg(bt, .9, 1.2)); g.strokeText('펑!', 0, 140 * PX); g.fillStyle = '#ff3b30'; g.fillText('펑!', 0, 140 * PX); g.restore(); }
 }
@@ -207,7 +207,7 @@ function cardDrop(t) {
 }
 function rageTint(t) {
   if (!CD.redden) return; const r = clamp((gaugeAt(t) - 25) / 75); if (r <= 0) return;
-  const gr = g.createRadialGradient(W / 2, H / 2, H * .25, W / 2, H / 2, H * .75); gr.addColorStop(0, 'rgba(255,40,30,0)'); gr.addColorStop(1, `rgba(255,30,20,${.42 * r})`);
+  const gr = g.createRadialGradient(W / 2, H / 2, H * .25, W / 2, H / 2, H * .75); gr.addColorStop(0, 'rgba(255,40,30,0)'); gr.addColorStop(1, `rgba(255,30,20,${.28 * r})`);
   g.fillStyle = gr; g.fillRect(0, 0, W, H);
 }
 function hud(t) {
@@ -229,7 +229,7 @@ function render(t) {
   setCam(t);
   if (S.light) S.light(t, { sun, hemi });
   const gd = post.grade.uniforms; gd.sat.value = 1.16; gd.contrast.value = .22; gd.warm.value = .25; gd.amt.value = .26; gd.expo.value = S.expo ?? 1;
-  { const r = CD.redden ? clamp((gaugeAt(t) - 25) / 75) : 0; gd.tint.value.set(1 + .08 * r, 1 - .16 * r, 1 - .2 * r); }
+  { const r = CD.redden ? clamp((gaugeAt(t) - 25) / 75) : 0; gd.tint.value.set(1 + .05 * r, 1 - .09 * r, 1 - .11 * r); }
   post.composer.render();
   hud(t);
 }
