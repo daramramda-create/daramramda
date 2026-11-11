@@ -234,6 +234,7 @@ function render(t) {
   hud(t);
 }
 window.TEXTS = t => { render(t); return TX; };
-window.render = render; window.DUR = S.dur; window.EV = S.EV.slice().sort((a, b) => a.t - b.t); window.DBG = { camera, scene, S, post };
+const FROM = +(QS.get('from') || 0), LEN = +(QS.get('len') || 0);   // 구간만 다시 렌더할 때
+window.render = FROM ? t => render(t + FROM) : render; window.DUR = LEN || S.dur; window.EV = S.EV.slice().sort((a, b) => a.t - b.t); window.DBG = { camera, scene, S, post };
 render(+(QS.get('t') ?? 1));
 window.READY = true;

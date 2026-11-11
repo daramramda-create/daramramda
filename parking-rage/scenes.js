@@ -253,7 +253,7 @@ function cut3(scene) {
   for (let x = -24; x <= 24; x += 2.7) { B.add(box(.12, .02, 5.2, '#f2f0e8', x, .02, -8.5)); B.add(box(.12, .02, 5.2, '#f2f0e8', x, .02, 4)); }
   const parkedB = [];
   for (let x = -22.6; x <= 22.6; x += 2.7) { [[-8.5, 0], [4, Math.PI]].forEach(([z, ry]) => { const c = makeCar(CARC[Math.floor(R() * CARC.length)]); c.position.set(x, 0, z); c.rotation.y = ry; B.add(c); }); }
-  for (let x = -20; x <= 20; x += 4.3) { if (Math.abs(x - .3) < 1) continue; const c = makeCar(CARC[Math.floor(R() * CARC.length)]); c.position.set(x, 0, -2.3); c.rotation.y = Math.PI / 2; B.add(c); parkedB.push(c); }   // 이중주차 줄
+  for (let x = -20; x <= 20; x += 4.3) { if (x > -2 && x < 5) continue; const c = makeCar(CARC[Math.floor(R() * CARC.length)]); c.position.set(x, 0, -2.3); c.rotation.y = Math.PI / 2; B.add(c); parkedB.push(c); }   // 이중주차 줄
   const pushCar = makeCar('#ff8fa3', { open: true }); pushCar.rotation.y = Math.PI / 2; B.add(pushCar);
   const helpers = [['bear', -1.4, '#2f7fd8'], ['rabbit', 3.7, '#1f9e5c']].map(([k, x, col]) => { const c = makeCar(col); c.position.set(x, 0, -5.3); c.rotation.y = Math.PI / 2; B.add(c); const a = makeAnimal(k); a.root.scale.setScalar(.95); B.add(a.root); return { a, c, x0: x }; });
   const sqB = makeSquirrel(); sqB.root.scale.setScalar(.72); B.add(sqB.root);
@@ -310,11 +310,20 @@ function cut3(scene) {
       beam.position.copy(fp.clone().addScaledVector(fd, 3.5)); beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), fd); beam.visible = s === 'A';
       gar.lampM.emissiveIntensity = .4 + (Math.sin(t * 23) > .7 ? .4 : 0);
       // B: 이중주차 차 밀기
-      const push = ss(seg(t, 3.4, 6.4)), jit = Math.sin(t * 30) * .02;
-      pushCar.position.set(lerp(.3, 1.3, push) + jit, 0, -2.3); sqB.root.position.set(pushCar.position.x - 2.6, 0, -1.6); sqB.root.rotation.y = Math.PI / 2 - .55;
-      sqB.pose({ armL: [1.55, .05], armR: [1.55, .05], lean: .38 + Math.sin(t * 8) * .04, brow: .8, eye: .9, lid: .3, mouth: .5, sweat: (t * 2.2) % 1, squash: .94 + Math.sin(t * 8) * .03, ear: .6, tailPuff: 1.1, headNod: .1 });
-      helpers.forEach(({ a, c, x0 }, i) => { const pp = ss(seg(t, 3.5 + i * .3, 6.5)); c.position.x = x0 + pp * .8 + Math.sin(t * 27 + i) * .015; a.root.position.set(c.position.x - 2.55, 0, -4.6); a.root.rotation.y = Math.PI / 2 - .5;
-        a.body.rotation.x = .36 + Math.sin(t * 7.5 + i) * .05; a.arms.forEach(sh => sh.rotation.x = -1.5); a.sweat.position.y = .2 - ((t * 2 + i * .5) % 1) * .2; });
+      // 영차 리듬: 뒤로 젖힘(wind) → 밀기(shove, 차가 조금 움직임) → 헐떡임. 고주파 떨림 없음.
+      const heave = (t0, n, per, dists) => { let x = 0, wind = 0, shove = 0, rock = 0, rest = 0;
+        for (let i = 0; i < n; i++) { const p = (t - t0 - i * per) / per; if (p < 0) break;
+          if (p >= 1) { x += dists[i]; continue; }
+          const m = ss(seg(p, .3, .62)); x += dists[i] * (1 - Math.pow(1 - m, 2.2));
+          wind = Math.sin(seg(p, 0, .3) * Math.PI) * (p < .3 ? 1 : 0); shove = Math.sin(seg(p, .26, .7) * Math.PI);
+          const q = Math.max(0, p - .62); rock = p > .62 ? Math.exp(-q * 9) * Math.sin(q * 26) : -shove * .6; rest = seg(p, .7, 1); }
+        return { x, wind, shove, rock, rest }; };
+      const hv = heave(3.5, 3, 1.0, [.16, .3, .52]);
+      pushCar.rotation.order = 'YXZ'; pushCar.position.set(.3 + hv.x, 0, -2.3); pushCar.rotation.x = hv.rock * .035;
+      sqB.root.position.set(pushCar.position.x - 2.6 - hv.wind * .14 + hv.shove * .05, 0, -1.6); sqB.root.rotation.y = Math.PI / 2 - .55;
+      sqB.pose({ armL: [1.55 - hv.wind * .35, .05], armR: [1.55 - hv.wind * .35, .05], lean: .34 - hv.wind * .2 + hv.shove * .24, brow: .8, eye: .9 - hv.shove * .5, lid: .3 + hv.shove * .5, mouth: .35 + hv.shove * .5 + hv.rest * .25 * Math.abs(Math.sin(t * 7)), sweat: (t * 1.6) % 1, squash: .95 - hv.wind * .05 + hv.shove * .04 + hv.rest * .025 * Math.sin(t * 7), ear: .6 - hv.shove * .3, tailPuff: 1.1, headNod: .1 + hv.shove * .25 });
+      helpers.forEach(({ a, c, x0 }, i) => { const h = heave(3.72 + i * .27, 3, 1.0, [.12, .22, .4]); c.rotation.order = 'YXZ'; c.position.x = x0 + h.x; c.rotation.x = h.rock * .03; a.root.position.set(c.position.x - 2.55 - h.wind * .12 + h.shove * .04, 0, -4.6); a.root.rotation.y = Math.PI / 2 - .5;
+        a.body.rotation.x = .32 - h.wind * .2 + h.shove * .22 + h.rest * .03 * Math.sin(t * 7 + i); a.arms.forEach(sh => sh.rotation.x = -1.5 + h.wind * .35); a.sweat.position.y = .2 - ((t * 1.5 + i * .5) % 1) * .2; });
       // C: 침대 → 벌떡 → 펑
       const up = sit(t), boom = t > 10, sootK = ss(seg(t, 10, 10.15));
       sqC.root.position.set(-1.6, lerp(.7, .55, up) + (t > 7.65 && t < 8.1 ? Math.sin((t - 7.65) / .45 * Math.PI) * .5 : 0), lerp(-1.35, -1.0, up));
