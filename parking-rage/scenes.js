@@ -254,7 +254,7 @@ function cut3(scene) {
   const parkedB = [];
   for (let x = -22.6; x <= 22.6; x += 2.7) { [[-8.5, 0], [4, Math.PI]].forEach(([z, ry]) => { const c = makeCar(CARC[Math.floor(R() * CARC.length)]); c.position.set(x, 0, z); c.rotation.y = ry; B.add(c); }); }
   for (let x = -20; x <= 20; x += 4.3) { if (Math.abs(x - .3) < 1) continue; const c = makeCar(CARC[Math.floor(R() * CARC.length)]); c.position.set(x, 0, -2.3); c.rotation.y = Math.PI / 2; B.add(c); parkedB.push(c); }   // 이중주차 줄
-  const pushCar = makeCar('#f2c230'); pushCar.rotation.y = Math.PI / 2; B.add(pushCar);
+  const pushCar = makeCar('#ff8fa3', { open: true }); pushCar.rotation.y = Math.PI / 2; B.add(pushCar);
   const helpers = [['bear', -1.4, '#2f7fd8'], ['rabbit', 3.7, '#1f9e5c']].map(([k, x, col]) => { const c = makeCar(col); c.position.set(x, 0, -5.3); c.rotation.y = Math.PI / 2; B.add(c); const a = makeAnimal(k); a.root.scale.setScalar(.95); B.add(a.root); return { a, c, x0: x }; });
   const sqB = makeSquirrel(); sqB.root.scale.setScalar(.72); B.add(sqB.root);
   // C: 새벽 6시 침실

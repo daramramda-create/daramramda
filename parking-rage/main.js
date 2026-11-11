@@ -87,12 +87,12 @@ function coverTitle(T, t) {
   const items = [];
   // 제목 뒤 흰 박스 (강조)
   { const k = popK(t - T.t0); if (k > 0) {
-    const bw = 840 * PX, bh = 470 * PX, cy = (485 + (T.dy || 0)) * PX, x0 = W / 2 - bw / 2;
+    const bw = 840 * PX, bh = (T.pill ? 470 : 350) * PX, cy = ((T.pill ? 485 : 560) + (T.dy || 0)) * PX, x0 = W / 2 - bw / 2;
     g.save(); g.translate(W / 2, cy); g.scale(k, k); g.translate(-W / 2, -cy);
     g.shadowColor = 'rgba(38,48,95,.22)'; g.shadowBlur = 34 * PX; g.shadowOffsetY = 10 * PX;
     g.fillStyle = 'rgba(255,255,255,.7)'; rr(x0, cy - bh / 2, bw, bh, 34 * PX); g.fill(); g.restore(); } }
   // 알약
-  { const s = t - T.t0, k = popK(s); if (k > 0) {
+  if (T.pill) { const s = t - T.t0, k = popK(s); if (k > 0) {
     const font = `700 ${40 * PX}px "Noto Sans KR"`; g.font = font; const tw = g.measureText(T.pill).width;
     const pw = tw + 80 * PX, ph = 80 * PX, cy = (330 + (T.dy || 0)) * PX, x0 = W / 2 - pw / 2;
     g.save(); g.translate(W / 2, cy); g.scale(k, k); g.translate(-W / 2, -cy);
@@ -113,7 +113,7 @@ function coverTitle(T, t) {
     g.shadowBlur = 0; g.shadowColor = 'transparent'; g.fillText(line, W / 2, cy);
     g.restore(); items.push([x0, cy - fs * PX * .55, x0 + tw, cy + fs * PX * .5]);
   });
-  if (t - T.t0 > .5 && items.length) TX.push({ id: 'title', text: T.pill + T.lines.join(''), x0: Math.min(...items.map(b => b[0])), y0: items[0][1], x1: Math.max(...items.map(b => b[2])), y1: items[items.length - 1][3] });
+  if (t - T.t0 > .5 && items.length) TX.push({ id: 'title', text: (T.pill || '') + T.lines.join(''), x0: Math.min(...items.map(b => b[0])), y0: items[0][1], x1: Math.max(...items.map(b => b[2])), y1: items[items.length - 1][3] });
 }
 function roadSign(sub, t) {
   const al = ss(seg(t, sub.t0, sub.t0 + .12)) * (1 - ss(seg(t, sub.t1 - .1, sub.t1)));

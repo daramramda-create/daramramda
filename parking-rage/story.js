@@ -7,7 +7,7 @@ export const CUTS = {
   0: { dur: 1, subs: [] },
   1: {
     dur: 5.0,
-    title: { pill: '2030 부동산 숏츠', lines: ['아파트', '주차대수별 분위기'], text: '아파트 주차대수별 분위기', t0: 0, t1: 3.2, dy: 120 },
+    title: { lines: ['아파트', '주차대수별 분위기'], text: '아파트 주차대수별 분위기', t0: 0, t1: 3.2, dy: 120 },
     subs: [{ text: '분노 게이지 [0%]', t0: .5, t1: 5.0, big: true }],
     gauge: [[0, 0]],
   },
