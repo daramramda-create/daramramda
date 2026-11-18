@@ -45,7 +45,8 @@ function chart(x, w, h, o) {   // a stock-app chart. o: {pts, upTo, col, label, 
   x.fillStyle = '#9aa3ad'; x.font = `${h * .045}px ${FONT}`; x.fillText(o.label, w * .07, h * .1);
   const vs = o.vs ?? .11, big = vs > .15;
   x.fillStyle = o.col; x.font = `${h * vs}px ${FONT}`; x.fillText(o.value, w * .07, big ? h * .33 : h * .22);
-  if (o.sub) { x.font = `${h * (big ? .08 : .05)}px ${FONT}`; x.fillText(o.sub, big ? w * .55 : w * .07, big ? h * .31 : h * .29); }
+  const vw = x.measureText(o.value).width;
+  if (o.sub) { x.font = `${h * (big ? .08 : .05)}px ${FONT}`; x.fillText(o.sub, big ? w * .07 + vw + w * .04 : w * .07, big ? h * .31 : h * .29); }
   const top = h * (big ? .42 : .36), bot = h * .9, L = w * .06, R = w * .94;
   x.strokeStyle = 'rgba(255,255,255,.08)'; x.lineWidth = 2;
   for (let i = 0; i <= 4; i++) { const y = lerp(top, bot, i / 4); x.beginPath(); x.moveTo(L, y); x.lineTo(R, y); x.stroke(); }
@@ -451,6 +452,7 @@ function render(t) {
   [cut1, cut2, cut3, cut4][c](tq);
   cam(t, c);
   post.composer.render();
+  { const gl = renderer.getContext(), px = new Uint8Array(4); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); }   // wait for the GPU before the screenshot
   hud(t, c);
 }
 

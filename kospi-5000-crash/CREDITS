@@ -1,0 +1,16 @@
+코스피 5,000 붕괴 — credits
+
+Fonts
+- Jua — The Jua Project Authors, SIL Open Font License 1.1 (fonts/OFL.txt), via Google Fonts
+- Noto Color Emoji — Google, SIL Open Font License 1.1 (system font used for emoji)
+
+3D assets (Poly Haven, CC0)
+- photo_studio_loft_hall HDRI, walnut wood texture, tea_set_01, desk_lamp_arm_01 — polyhaven.com, CC0
+
+Code
+- three.js (MIT); brick geometry/material code adapted from the Lemo-Opuscar Brick Toy engine (MIT)
+
+Sound
+- All music and sound effects synthesized in code for this film (mix.py); no samples.
+
+Data on screen (KOSPI levels, stock moves, net selling) is as supplied by the producer.

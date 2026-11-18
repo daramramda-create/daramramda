@@ -23,12 +23,45 @@ function fuzzTex(seed) {
   }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(5, 5); return t;
 }
-const FUZZ = fuzzTex(3), furCache = new Map();
+const FUZZ = fuzzTex(3), furCache = new Map(), FUR = new Set();
+// flocked fabric (like a flocked toy animal): mottled colour, no specular, bright velvet sheen at grazing angles
+function noiseTex(N, seed, f, rep) {
+  const c = document.createElement('canvas'); c.width = c.height = N; const x = c.getContext('2d'), img = x.createImageData(N, N);
+  let s = seed * 7919 + 1; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < N * N; i++) { const v = f(R()); img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v; img.data[i * 4 + 3] = 255; }
+  x.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep, rep); t.magFilter = THREE.NearestFilter; return t;
+}
+const MOTTLE = noiseTex(512, 5, r => 205 + r * 50, 4);
+const STRANDS = noiseTex(256, 9, r => r * 255, 4);
 export function fur(color) {
   if (furCache.has(color)) return furCache.get(color);
-  const base = new THREE.Color(color), sheen = base.clone().lerp(new THREE.Color('#ffffff'), .55);
-  const m = new THREE.MeshPhysicalMaterial({ color: base, roughness: .97, metalness: 0, specularIntensity: .15, sheen: 1, sheenRoughness: .55, sheenColor: sheen, normalMap: FUZZ, normalScale: new THREE.Vector2(.55, .55), envMapIntensity: .6 });
-  furCache.set(color, m); return m;
+  const base = new THREE.Color(color), sheen = base.clone().lerp(new THREE.Color('#ffffff'), .7);
+  const m = new THREE.MeshPhysicalMaterial({ color: base, map: MOTTLE, roughness: 1, metalness: 0, specularIntensity: 0, sheen: 1, sheenRoughness: .35, sheenColor: sheen, normalMap: FUZZ, normalScale: new THREE.Vector2(.9, .9), envMapIntensity: .5 });
+  m.userData.furColor = color; FUR.add(m); furCache.set(color, m); return m;
+}
+// shell fur: a few offset layers with sparse strands, so the silhouette is soft and fuzzy
+const shellCache = new Map();
+function shellMat(color, k, n, push) {
+  const key = color + k + (push ? 'p' : ''); if (shellCache.has(key)) return shellCache.get(key);
+  const base = new THREE.Color(color).lerp(new THREE.Color('#ffffff'), .12 + k * .06);
+  const m = new THREE.MeshStandardMaterial({ color: base, roughness: 1, envMapIntensity: .7, alphaMap: STRANDS, alphaTest: .5 + (k + 1) / (n + 1) * .42, side: THREE.FrontSide });
+  const off = (k + 1) * .03;
+  if (push) m.onBeforeCompile = sh => { sh.uniforms.uOff = { value: off }; sh.vertexShader = 'uniform float uOff;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  transformed += objectNormal * uOff;'); };
+  m.customProgramCacheKey = () => push ? 'furshell' : 'furshell0';
+  shellCache.set(key, m); return m;
+}
+function addShells(root, n = 3) {
+  const list = []; root.traverse(o => { if (o.isMesh && FUR.has(o.material)) list.push(o); });
+  for (const o of list) {
+    const sc = Math.min(o.scale.x, o.scale.y, o.scale.z); if (sc < .3) continue;
+    const sphere = o.geometry.type === 'SphereGeometry';
+    for (let k = 0; k < n; k++) {
+      const sh = new THREE.Mesh(o.geometry, shellMat(o.material.userData.furColor, k, n, !sphere)); sh.castShadow = false; sh.receiveShadow = true; sh.userData.shell = true;
+      if (sphere) { const d = (k + 1) * .03; sh.scale.set(1 + d / o.scale.x, 1 + d / o.scale.y, 1 + d / o.scale.z); }
+      o.add(sh);
+    }
+  }
 }
 function ell(rx, ry, rz, color, o = {}) {
   const m = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), o.mat || (o.plastic ? plastic(color, o) : fur(color))); m.scale.set(rx, ry, rz);
@@ -81,7 +114,7 @@ export function makeSquirrel(o = {}) {
   const tailPts = [[-.6, 1.6, -1.2], [-2.8, 1.5, -1.9], [-4.6, 3.2, -2.3], [-5.0, 6.0, -2.3], [-3.9, 8.4, -2.0], [-2.0, 9.0, -1.7], [-1.0, 8.0, -1.5]].map(p => new THREE.Vector3(...p));
   const tailCurve = new THREE.CatmullRomCurve3(tailPts, false, 'centripetal');
   const tailR = u => (1.0 + 1.0 * Math.sin(Math.min(1, u * 1.25) * Math.PI * .85)) * cap(u) * (1 - .3 * u);
-  const tailG = new THREE.Group(); body.add(tailG); if (o.tailFlip) tailG.scale.x = -1;
+  const TS = .72, tailG = new THREE.Group(); body.add(tailG); tailG.scale.set(o.tailFlip ? -TS : TS, TS, TS); tailG.position.set(-.6 * (1 - TS) * (o.tailFlip ? -1 : 1), 1.6 * (1 - TS), -1.2 * (1 - TS));
   const tail = new THREE.Mesh(sweep(tailCurve, tailR), fur(C.fur)); tail.castShadow = tail.receiveShadow = true; tailG.add(tail);
   const stripeCurve = new THREE.CatmullRomCurve3(tailPts.slice(1, 6).map((p, i) => p.clone().add(new THREE.Vector3(.35, -.1, 1.15 - i * .05))), false, 'centripetal');
   const stripe = new THREE.Mesh(sweep(stripeCurve, u => (.55 + .55 * Math.sin(u * Math.PI)) * cap(u)), fur(C.light)); stripe.castShadow = stripe.receiveShadow = true; tailG.add(stripe);
@@ -144,7 +177,8 @@ export function makeSquirrel(o = {}) {
     sack.position.set(1.8, 5.6, -1.6); sack.rotation.z = -.45;
     sack.traverse(m => { if (m.isMesh) m.castShadow = m.receiveShadow = true; });
   }
-  root.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+  root.traverse(m => { if (m.isMesh && !m.userData.shell) { m.castShadow = true; m.receiveShadow = true; } });
+  addShells(root);
 
   // p: x,y,z,ry; legs[2]; armL/armR [fwd, side]; lean, roll; nod/look/tilt; jaw 0..1; brow -1 worried … 1 angry;
   // cry 0..1 with cryT (time); crown/glasses/sack; blink; eyeS (eye scale)
