@@ -1,0 +1,22 @@
+근생빌라 (4 cuts, 9:16) — third-party assets and tools
+
+Character
+- Squirrel: based on the illustration supplied by the user (their own material), rebuilt as low-poly 3D in code.
+
+Fonts (subsets, self-hosted in fonts/)
+- Jua — SIL Open Font License 1.1 — https://fonts.google.com/specimen/Jua
+- Black Han Sans — SIL Open Font License 1.1 — https://fonts.google.com/specimen/Black+Han+Sans
+- Gaegu — SIL Open Font License 1.1 — https://fonts.google.com/specimen/Gaegu
+- Noto Color Emoji (system font, used for 🚨 😱) — SIL Open Font License 1.1 — https://github.com/googlefonts/noto-emoji
+
+Code and libraries
+- three.js r170 — MIT — https://threejs.org
+- Post-processing pass adapted from the Lemo-Opuscar lowpoly-island demo — MIT — https://github.com/lemomo-ai/lemo-opuscar
+- Lemo-Opuscar core tools (render, mux, sfx) — MIT
+
+Audio
+- Music, foley and ambience are synthesized in code (mix.py, core/audio/sfx.py). No samples, no recordings.
+- No voice: narration and dialogue appear as on-screen captions.
+
+Tools
+- ffmpeg (imageio-ffmpeg build from PyPI) — LGPL/GPL — https://ffmpeg.org

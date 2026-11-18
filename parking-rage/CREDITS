@@ -1,0 +1,19 @@
+아파트 주차대수별 분위기 (4 cuts, 9:16) — third-party assets and tools
+
+Character
+- Squirrel: based on the illustration supplied by the user (their own material), rebuilt in 3D in code. Bear and rabbit extras are original.
+
+Fonts (subsets, self-hosted in fonts/)
+- Noto Sans KR, Overpass Mono, Gaegu — SIL Open Font License 1.1 — https://fonts.google.com
+- Noto Color Emoji (system font) — SIL Open Font License 1.1
+
+Code and libraries
+- three.js r170 — MIT — https://threejs.org
+- Tilt-shift post pass adapted from the Lemo-Opuscar tilt-shift demo — MIT — https://github.com/lemomo-ai/lemo-opuscar
+- Lemo-Opuscar core tools (render, mux, sfx) — MIT
+
+Audio
+- Music, foley and ambience synthesized in code (mix.py, core/audio/sfx.py). No samples, no recordings. No voice.
+
+Tools
+- ffmpeg (imageio-ffmpeg build from PyPI) — LGPL/GPL — https://ffmpeg.org
