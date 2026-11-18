@@ -23,12 +23,13 @@ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadow
 document.getElementById('stage').appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(38, W / H, .5, 3000);
-const post = makePost(renderer, scene, camera, W, H, { ssaa: SSAA, ao: true, aoRadius: 3, aoThickness: 3, aoAmt: .85 });
+const post = makePost(renderer, scene, camera, W, H, { ssaa: SSAA, ao: QS.get('ao') !== '0', aoRadius: 3, aoThickness: 3, aoAmt: .85 });
 post.bloom.strength = .16; post.bloom.threshold = 1.2;
 post.vig.uniforms.amt.value = .3; post.vig.uniforms.warm.value = -.3; post.vig.uniforms.contrast.value = .24; post.vig.uniforms.sat.value = 1.1;
 
 await document.fonts.load('80px Jua', '가나다코스피');
 const set = await buildSet(scene);
+if (QS.get('sm')) set.key.shadow.mapSize.set(+QS.get('sm'), +QS.get('sm'));
 
 // —— canvas textures ——
 function canvasTex(w, h, draw) {
@@ -361,7 +362,7 @@ function cam(t, c) {
   const k = set.key, fc = focus || look; k.intensity = c === 1 ? 1.4 : 3.0;
   k.target.position.copy(fc); k.position.copy(fc).add(V(-50, 110, 70)); k.target.updateMatrixWorld();
   Object.assign(k.shadow.camera, { left: -span, right: span, top: span, bottom: -span }); k.shadow.camera.updateProjectionMatrix();
-  post.dof.focus = camera.position.distanceTo(focus); post.dof.aper = aper; post.dof.maxCoc = 14;
+  post.dof.focus = camera.position.distanceTo(focus); post.dof.aper = aper; post.dof.maxCoc = +(QS.get('coc') ?? 14);
 }
 function toScreen(p) { const v = p.clone().project(camera); return [(v.x + 1) / 2 * W, (1 - v.y) / 2 * H]; }
 
