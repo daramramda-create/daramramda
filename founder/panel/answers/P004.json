@@ -1,0 +1,13 @@
+{
+  "id": "P004",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "핑크 키보드가 내 흰색·핑크 책상이랑 너무 잘 어울려서 방 꾸미기 겸 나한테 주는 크리스마스 선물로 딱이다. 쿠팡이라 반품도 쉬우니까 리뷰 실사진 보고 색 괜찮으면 바로 지를 것 같다.",
+  "objection": "영상 조명 때문에 예쁜 파스텔 핑크로 보이는 거지 실물은 형광 핑크나 탁한 살구색일 것 같다. 팔로워 56명짜리 처음 보는 계정이라 영상만 믿기는 어렵다.",
+  "would_change_my_mind": "쿠팡 리뷰 실사진에서 색이 영상보다 칙칙하거나 노랗게 나와 있으면 안 산다.",
+  "price_too_cheap": 20000,
+  "price_cheap": 35000,
+  "price_expensive": 70000,
+  "price_too_expensive": 100000
+}

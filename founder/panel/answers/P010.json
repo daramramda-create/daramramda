@@ -1,0 +1,13 @@
+{
+  "id": "P010",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "timing",
+  "reason": "핑크 키보드 예쁘고 내 책상이랑도 어울릴 것 같아서 저장은 해둘 것 같아요. 근데 처음 보는 계정 링크 타고 바로 사진 않고, 블랙프라이데이나 연말 쿠팡 세일 때 가격 떨어지면 그때 살래요.",
+  "objection": "영상만으로는 실제 핑크 색감이 내 책상이랑 맞는지 모르겠고, 5만원대면 지금 급하게 살 이유가 없어요. 세일하면 더 싸질 것 같아요.",
+  "would_change_my_mind": "지금만 하는 할인이나 쿠폰으로 4만원 초반까지 내려가거나, 실물 색감이 보이는 후기 사진이 더 있으면 바로 살 것 같아요.",
+  "price_too_cheap": 15000,
+  "price_cheap": 35000,
+  "price_expensive": 60000,
+  "price_too_expensive": 85000
+}
