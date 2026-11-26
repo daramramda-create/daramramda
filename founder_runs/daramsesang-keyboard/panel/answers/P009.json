@@ -1,0 +1,13 @@
+{
+  "id": "P009",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "키보드는 예쁜데 팔로워 56명짜리 처음 보는 계정이고 쿠팡 파트너스 링크라 그냥 홍보 같아요. 모델명도 안 나와 있어서 알리나 네이버에서 같은 거 찾아보다가 결국 안 살 것 같아요.",
+  "objection": "영상 조명 때문에 핑크가 예뻐 보이는 거지 실물은 형광 핑크거나 누리끼리할 것 같고, 모델명이 없어서 다른 데서 더 싸게 파는지 비교도 못 해요.",
+  "would_change_my_mind": "모델명이랑 자연광에서 찍은 실물 사진이나 실구매자 후기가 있고, 비교해 봤을 때 쿠팡이 제일 싸면 살 수도 있어요.",
+  "price_too_cheap": 20000,
+  "price_cheap": 35000,
+  "price_expensive": 55000,
+  "price_too_expensive": 75000
+}

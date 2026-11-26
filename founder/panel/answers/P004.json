@@ -1,13 +1,13 @@
 {
   "id": "P004",
-  "buys": true,
-  "purchases_first_month": 1,
-  "reason_code": "need",
-  "reason": "핑크 키보드가 내 흰색·핑크 책상이랑 너무 잘 어울려서 방 꾸미기 겸 나한테 주는 크리스마스 선물로 딱이다. 쿠팡이라 반품도 쉬우니까 리뷰 실사진 보고 색 괜찮으면 바로 지를 것 같다.",
-  "objection": "영상 조명 때문에 예쁜 파스텔 핑크로 보이는 거지 실물은 형광 핑크나 탁한 살구색일 것 같다. 팔로워 56명짜리 처음 보는 계정이라 영상만 믿기는 어렵다.",
-  "would_change_my_mind": "쿠팡 리뷰 실사진에서 색이 영상보다 칙칙하거나 노랗게 나와 있으면 안 산다.",
-  "price_too_cheap": 20000,
-  "price_cheap": 35000,
-  "price_expensive": 70000,
-  "price_too_expensive": 100000
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "2016년 노래 나오면 반가워서 끝까지는 볼 것 같은데, 영상 하나에 팔로워 0명인 계정을 팔로우할 이유는 없어요. 시리즈가 진짜 꾸준히 올라오는지 보고 나서 정할래요.",
+  "objection": "예고만 해놓고 두세 편 하다 끊기는 계정을 너무 많이 봤어요. 노래도 평범하고 얼굴도 안 나오니까 이 사람만의 재미가 뭔지 아직 모르겠어요.",
+  "would_change_my_mind": "피드에 2017년, 2018년 편이 연달아 뜨면서 매주 정해진 날에 올라온다는 게 보이고, 다음 연도가 기다려질 때",
+  "price_too_cheap": 500,
+  "price_cheap": 990,
+  "price_expensive": 2900,
+  "price_too_expensive": 4900
 }

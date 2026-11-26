@@ -1,0 +1,13 @@
+{
+  "id": "P020",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "팔로워 56명짜리 처음 보는 계정에 쿠팡 파트너스 문구까지 붙어 있으면 그냥 홍보 계정이라 넘겨요. 알리에서 비슷한 핑크 키보드가 2~3만원인데 굳이 5만원대를 이 링크로 살 이유가 없어요.",
+  "objection": "수수료 받고 올리는 광고라 '조약돌 느낌' 같은 말을 믿을 수가 없고, 브랜드명도 안 나와서 알리 제품 떼다 파는 건지 모르겠어요.",
+  "would_change_my_mind": "제가 믿는 인플루언서나 지인의 솔직한 실사용 후기, 그리고 브랜드명과 쿠팡 리뷰 수가 확인되면 생각해볼 것 같아요.",
+  "price_too_cheap": 15000,
+  "price_cheap": 30000,
+  "price_expensive": 55000,
+  "price_too_expensive": 80000
+}
